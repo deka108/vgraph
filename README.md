@@ -1,6 +1,27 @@
 # Lab 3 - Visibility Graph Path Planning
 Lab 3 for [COMSW4733 Computational Aspects of Robotics](https://www.cs.columbia.edu/~allen/F19/) at Columbia University (Instructor: [Prof. Peter Allen](http://www.cs.columbia.edu/~allen/)).
 
+## Additional Notes
+
+### Source code is available under:
+- notebooks/vgraph.ipynb -- the jupyter notebook
+- src/vgraph.py -- the python version (haven't tested yet, this is just basically a converted version of the notebook)
+
+### requirements.txt
+(ROS by Example thingy)
+scipy
+numpy
+matplotlib
+opencv
+
+### What I've done:
+- grow the obstacle by the center of the robot
+- implement convex hull algo to get the points covering the obstacle
+- implement vgraph algo with line segment intersection checking to extract all the visible segments
+- initial attempt to implementation of graph representation and Djikstra algorithm.
+
+Note that I haven't refactored the code yet, and have done all the code in jupyter notebooks, so feel free to do that. And there might be a bug with the Djikstra implementation as the shortest path result differs from the TA.
+
 ## Introduction
 In this lab, you are required to implement visibility graph (vgraph) path planning algorithm using the ArbotiX turtlebot simulator and visualize the graph and robot path following in RViz.
 
