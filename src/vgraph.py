@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[108]:
+# In[32]:
 
 
 import cv2
@@ -19,7 +19,7 @@ if module_path not in sys.path:
     sys.path.append(module_path)
 
 
-# In[109]:
+# In[33]:
 
 
 from src import create_map
@@ -28,7 +28,7 @@ from src.create_map import load_goal
 from src.create_map import map2img
 
 
-# In[110]:
+# In[34]:
 
 
 class Edge(object):
@@ -40,7 +40,7 @@ class Edge(object):
         return "Edge({}, {})".format(self.point, self.weight)
 
 
-# In[111]:
+# In[35]:
 
 
 class Point(object):
@@ -80,7 +80,7 @@ class Point(object):
         return self.cost != point.cost
 
 
-# In[112]:
+# In[36]:
 
 
 point1 = Point(0, 0)
@@ -88,19 +88,19 @@ point1.add_edge(Point(1, 1))
 point1
 
 
-# In[113]:
+# In[37]:
 
 
 point2 = Point(1, 1)
 
 
-# In[114]:
+# In[38]:
 
 
 obstacles = load_obstacles("../data/world_obstacles.txt")
 
 
-# In[115]:
+# In[39]:
 
 
 # The map we use in RViz is 1200cm by 600cm, 
@@ -118,25 +118,25 @@ obstacles = load_obstacles("../data/world_obstacles.txt")
 # robot to be a 36cm-by-36cm square.
 
 
-# In[116]:
+# In[40]:
 
 
 # for each obstacle, generate four squares which adds the padding of 18 - 18 to each point of the obstacle
 
 
-# In[117]:
+# In[41]:
 
 
 obstacles
 
 
-# In[118]:
+# In[42]:
 
 
 goal = load_goal("../data/goal.txt")
 
 
-# In[119]:
+# In[43]:
 
 
 start = [0, 0]
@@ -144,7 +144,7 @@ start = [0, 0]
 
 # ## expand obstacles and convex hull
 
-# In[120]:
+# In[44]:
 
 
 # get expanded obstacles
@@ -179,7 +179,7 @@ for obstacle in obstacles:
 
 # ### draw the convex hull of the grown obstacles
 
-# In[121]:
+# In[45]:
 
 
 plt.plot(start[0], start[1], 'or')
@@ -202,7 +202,7 @@ for obstacle in grown_obstacles:
 plt.plot(goal[0], goal[1], 'ob')
 
 
-# In[122]:
+# In[46]:
 
 
 plt.plot(start[0], start[1], 'or')
@@ -221,7 +221,7 @@ for idx, simplices in enumerate(padded_simplices):
 plt.plot(goal[0], goal[1], 'ob')
 
 
-# In[123]:
+# In[47]:
 
 
 # for collision detection: checking if line segments intersect
@@ -272,13 +272,13 @@ def segment_intersect(point1, point2, point3, point4, epsilon = EPSILON):
     return False
 
 
-# In[124]:
+# In[48]:
 
 
 start
 
 
-# In[125]:
+# In[49]:
 
 
 goal
@@ -292,7 +292,7 @@ goal
 # 2. connect the points, from start point to every point in convex hull and goal and from every point of convex hull to other points in other convex hulls and goal
 # 3. remove unseen lines, by removing the edges that intersect with a convex hull edge
 
-# In[126]:
+# In[50]:
 
 
 # convert all the start and goal into Point(x, y)
@@ -300,7 +300,7 @@ start_point = Point(*start)
 goal_point = Point(*goal)
 
 
-# In[127]:
+# In[51]:
 
 
 # convert all the obstacles into Point(x, y)
@@ -313,7 +313,7 @@ for obs in grown_obstacles:
 obstacle_points
 
 
-# In[128]:
+# In[52]:
 
 
 # computing line segments for each padded obstacle edges
@@ -332,7 +332,7 @@ obstacle_edges
 # 
 # To remove a non-visible line, we compare two line segments and check if they intersect with an edge that lie on a obstacle boundary.
 
-# In[129]:
+# In[53]:
 
 
 def extract_non_intersecting_lines(candidate_segments, obstacle_segments):
@@ -358,14 +358,14 @@ def extract_non_intersecting_lines(candidate_segments, obstacle_segments):
     return lines_not_intersect
 
 
-# In[130]:
+# In[54]:
 
 
 # combine all the segments of the obstacles
 obstacle_segments = list(itertools.chain.from_iterable(obstacle_edges))
 
 
-# In[131]:
+# In[55]:
 
 
 # combine all the possible points to create a total graph
@@ -373,7 +373,7 @@ all_points = [[start_point]] + obstacle_points + [[goal_point]]
 all_points
 
 
-# In[132]:
+# In[56]:
 
 
 # get all the non-collision segments
@@ -387,6 +387,7 @@ for i, points in enumerate(all_points):
         free_segments = extract_non_intersecting_lines(candidate_segments, obstacle_segments)
         all_free_segments.append(free_segments)
         
+all_free_segments = all_free_segments + obstacle_edges
 all_free_segments
 
 
@@ -399,7 +400,7 @@ all_free_segments
 # 2. if node already in the graph, retrieve it. if node is not in the graph, add the node to the graph, then retrieve it.
 # 3. add the segment node pair into the edges of the retrieved node and vice versa
 
-# In[133]:
+# In[57]:
 
 
 # reduce line segments into point in graph
@@ -413,19 +414,19 @@ for free_segments in all_free_segments:
         point1.add_edge(point2)
         point2.add_edge(point1)
 
-graph[start_point.id].edges
+# graph[start_point.id].edges
 
 
 # ## djikstra
 
-# In[134]:
+# In[58]:
 
 
 queue = [start_point]
 np.argpartition(queue, 0)[0]
 
 
-# In[148]:
+# In[59]:
 
 
 def get_element_index(arr, node):
@@ -434,7 +435,7 @@ def get_element_index(arr, node):
             return i
 
 
-# In[149]:
+# In[60]:
 
 
 # initialize the data structures
@@ -488,37 +489,37 @@ if goal_is_found:
 print(path_to_goal)
 
 
-# In[150]:
+# In[61]:
 
 
 np.sqrt(82**2 + 68**2)
 
 
-# In[151]:
+# In[62]:
 
 
 path_to_goal[1].edges
 
 
-# In[152]:
+# In[63]:
 
 
 print(path_to_goal[1].cost)
 
 
-# In[153]:
+# In[64]:
 
 
 path_to_goal[2].cost
 
 
-# In[154]:
+# In[65]:
 
 
 path_to_goal[3].edges
 
 
-# In[155]:
+# In[66]:
 
 
 plt.plot(start[0], start[1], 'or')
