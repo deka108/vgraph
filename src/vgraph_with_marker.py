@@ -3,6 +3,7 @@
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Quaternion, Pose, Point, Vector3
 from std_msgs.msg import Header, ColorRGBA
+from bug_algo2 import OutAndBack
 
 import ast
 import itertools

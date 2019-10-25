@@ -10,7 +10,8 @@ from math import *
 from sensor_msgs.msg import LaserScan
 
 # Metadata
-TWIST_PUBLISHER_NAME = "/cmd_vel_mux/input/teleop"
+# TWIST_PUBLISHER_NAME = "/cmd_vel_mux/input/teleop"
+TWIST_PUBLISHER_NAME = '/cmd_vel'
 STEP_MOVEMENT_INTERVAL = 0.2
 MINIMUM_OBSTACLE_RANGE = 0.8
 GOAL_COORDINATES = (10, 0)
@@ -21,6 +22,7 @@ is_obstacle = False
 class OutAndBack:
 
     def __init__(self):
+        rospy.init_node('odom')
 
         # Setup all publishers
         self.cmd_vel = rospy.Publisher(TWIST_PUBLISHER_NAME, Twist, queue_size=5)
@@ -36,8 +38,6 @@ class OutAndBack:
         # Give tf some time to fill its buffer
         rospy.sleep(2)
 
-        (goal_x, goal_y) = self.normalize_bot()
-
         self.odom_frame = '/odom'
 
         try:
@@ -51,25 +51,24 @@ class OutAndBack:
                 rospy.loginfo("Cannot find transform between /odom and /base_link or /base_footprint")
                 rospy.signal_shutdown("tf Exception")
     
-   def move_forward(xin,yin,xf,yf):
-	
-	x1 = xin
-	y1 = yin
-	x2 = xf
-	y2 = yf
-	thresh = 0.1
-	(position,rotation) = self.get_odom()
+    def move_forward(self, xin,yin,xf,yf):
+        x1 = xin
+        y1 = yin
+        x2 = xf
+        y2 = yf
+        thresh = 0.1
+        (position,rotation) = self.get_odom()
 
-	while (abs(x1 - x2) > thresh) and (abs(y1-y2) > thresh):
-	    dx = x2-x1
-	    dy = y2-y1
-	    distTravel = 0.1
-	    rotAngle = (degrees(atan2(dy,dx)) - degrees(rotation))
-	    self.rotate(rotAngle)
-	    self.move(distTravel)
-	    (position,rotation) = self.get_odom()
-	    x1 = position.x
-	    y1 = position.y
+        while (abs(x1 - x2) > thresh) and (abs(y1-y2) > thresh):
+            dx = x2-x1
+            dy = y2-y1
+            distTravel = 0.1
+            rotAngle = (degrees(atan2(dy,dx)) - degrees(rotation))
+            self.rotate(rotAngle)
+            self.move(distTravel)
+            (position,rotation) = self.get_odom()
+            x1 = position.x
+            y1 = position.y
 	
     def move(self, distance, axis=0):
         print("Moving for: ", distance)
@@ -159,8 +158,10 @@ class OutAndBack:
 if __name__ == '__main__':
     try:
         t = OutAndBack()
-	t.move_forward(0,0,1,1)
-	t.move_forward(1,1,2,3)
-    except:
+        print("move")
+        t.move_forward(0,0,1,1)
+        t.move_forward(1,1,2,3)
+        print('finish moving')
+    except :
         rospy.loginfo("Out-and-Back node terminated.")
-
+        raise
