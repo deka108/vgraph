@@ -68,7 +68,6 @@ class Graph:
 
             visited[node] = True
             if node == goal_node:
-                print("Goal is found!")
                 is_goal_found = True
                 break
 
@@ -313,7 +312,6 @@ def main():
             graph.add_bidirectional_edge(segment[0], segment[1])
 
     way_points = graph.dijkstra(start_point, goal_point)
-    print(way_points)
 
     return obstacle_segments, all_free_segments, way_points
 

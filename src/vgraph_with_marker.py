@@ -27,8 +27,8 @@ def draw_obstacles(marker_publisher, points):
     marker.scale.x = 0.02
     marker.color.a = 0.8
     marker.color.r = 1.0
-    marker.color.g = 0.0
-    marker.color.b = 0.0
+    marker.color.g = 1.0
+    marker.color.b = 1.0
 
     points = list(itertools.chain.from_iterable(points)) 
     points = [Point(point.x/100.0, point.y/100.0, -1e-3) for point in points ]
@@ -68,8 +68,8 @@ def draw_vgraph(marker_publisher, points):
     marker.scale.x = 0.02
     marker.color.a = 1.0
     marker.color.r = 1.0
-    marker.color.g = 0.0
-    marker.color.b = 0.0
+    marker.color.g = 1.0
+    marker.color.b = 1.0
     points = list(itertools.chain.from_iterable(points)) 
     points = list(itertools.chain.from_iterable(points)) 
     
