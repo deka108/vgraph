@@ -3,7 +3,7 @@
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Quaternion, Pose, Point, Vector3
 from std_msgs.msg import Header, ColorRGBA
-from bug_algo2 import OutAndBack
+from move_fwd import OutAndBack
 from vgraph import main as run_vgraph
 
 import ast
@@ -30,6 +30,7 @@ def draw_obstacles(marker_publisher, points):
     marker.color.g = 0.0
     marker.color.b = 0.0
 
+    points = list(itertools.chain.from_iterable(points)) 
     points = [Point(point.x/100.0, point.y/100.0, -1e-3) for point in points ]
     marker.points = points
     marker_publisher.publish(marker)
@@ -47,7 +48,13 @@ def draw_shortest_path(marker_publisher, points):
     marker.color.g = 1.0
     marker.color.b = 0.0
 
-    points = [Point(point[0]/100.0, point[1]/100.0, 1e-3) for point in points]
+    #points = list(itertools.chain.from_iterable(points)) 
+    #points = list(itertools.chain.from_iterable(points)) 
+    shortest_path = []
+    for i in range(len(points) - 1):
+      shortest_path.append(points[i])
+      shortest_path.append(points[i+1])
+    points = [Point(point.x/100.0, point.y/100.0, 1e-3) for point in shortest_path]
     marker.points = points
     marker_publisher.publish(marker)
 
@@ -63,8 +70,10 @@ def draw_vgraph(marker_publisher, points):
     marker.color.r = 1.0
     marker.color.g = 0.0
     marker.color.b = 0.0
-
-    points = [Point(point[0]/100.0, point[1]/100.0, -1e-3) for point in points ]
+    points = list(itertools.chain.from_iterable(points)) 
+    points = list(itertools.chain.from_iterable(points)) 
+    
+    points = [Point(point.x/100.0, point.y/100.0, -1e-3) for point in points ]
     marker.points = points
     marker_publisher.publish(marker)
 
@@ -72,7 +81,8 @@ def main():
     rospy.init_node('vgraph_project')
 
     marker_publisher = rospy.Publisher('vgraph_markers', Marker, queue_size=10)
-    rospy.sleep(0.5)
+    print("Growing Obstacles....")
+    rospy.sleep(5)
     
     obstacle_segments, free_segments, shortest_path = run_vgraph()
 
@@ -80,13 +90,26 @@ def main():
     while not rospy.is_shutdown():
         # draw the obstacle_segments
         draw_obstacles(marker_publisher, obstacle_segments)
-        
+        print("Growth of obstacles done....")
+        print("Calculating VGraph....")
+        rospy.sleep(5)
         # draw free segments
         draw_vgraph(marker_publisher, free_segments)
+        print("Calculation of Vgraph done..")
+        print("Calculating shortest path...")
+        rospy.sleep(5)
         
         # draw shortest path
         draw_shortest_path(marker_publisher, shortest_path)
-        rospy.sleep(0.1)
+        print("Shortest path is", shortest_path)
+        rospy.sleep(5)
+        print("Moving along shortest path", shortest_path)
+        
+        shortest_tuples = [ (point.x, point.y) for point in shortest_path]
+        t = OutAndBack()
+        t.MovePath(shortest_tuples)
+        break
+
 
 if __name__ == '__main__':
     # free_segments = []

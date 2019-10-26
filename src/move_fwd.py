@@ -16,7 +16,7 @@ TWIST_PUBLISHER_NAME = '/cmd_vel'
 class OutAndBack:
 
     def __init__(self):
-        rospy.init_node('odom')
+        #rospy.init_node('move_bot')
 
         # Setup all publishers
         self.cmd_vel = rospy.Publisher(TWIST_PUBLISHER_NAME, Twist, queue_size=5)
@@ -62,7 +62,7 @@ class OutAndBack:
 	
     def move(self, distance, axis=0):
         print("Moving for: ", distance)
-        linear_speed = 1
+        linear_speed = 0.5
 
         move_cmd = Twist()
         if axis == 0:
@@ -73,11 +73,31 @@ class OutAndBack:
         if distance < 0:
             move_cmd.linear.x = -1 * linear_speed
 
-        linear_duration = abs(distance / linear_speed)
-        ticks = int(linear_duration * self.rate)
-        for t in range(ticks):
+        goal_distance = distance
+
+        # Get the starting position values     
+        (position, rotation) = self.get_odom()
+        
+        x_start = position.x
+        y_start = position.y
+        
+        # Keep track of the distance traveled
+        distance = 0
+        
+        # Enter the loop to move along a side
+        while distance < goal_distance and not rospy.is_shutdown():
+            # Publish the Twist message and sleep 1 cycle         
             self.cmd_vel.publish(move_cmd)
+            
             self.r.sleep()
+        
+            # Get the current position
+            (position, rotation) = self.get_odom()
+            
+            # Compute the Euclidean distance from the start
+            distance = sqrt(pow((position.x - x_start), 2) + 
+                            pow((position.y - y_start), 2))
+
         self.cmd_vel.publish(Twist())
 
     def rotate(self, goal_angle_degrees):
@@ -86,7 +106,7 @@ class OutAndBack:
     
     def rotate_radians(self, goal_angle):
 
-        angular_speed = 1
+        angular_speed = 0.5
         angular_tolerance = 0.02
 
         (position, rotation) = self.get_odom()

@@ -9,9 +9,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.spatial import ConvexHull
 
-from src.create_map import load_goal
-from src.create_map import load_obstacles
-from src.create_map import map2img
+from create_map import load_goal
+from create_map import load_obstacles
+from create_map import map2img
 
 
 class Edge(object):
