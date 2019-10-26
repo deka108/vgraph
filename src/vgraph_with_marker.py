@@ -4,6 +4,7 @@ from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Quaternion, Pose, Point, Vector3
 from std_msgs.msg import Header, ColorRGBA
 from bug_algo2 import OutAndBack
+from vgraph import main as run_vgraph
 
 import ast
 import itertools
@@ -67,14 +68,19 @@ def draw_vgraph(marker_publisher, points):
     marker.points = points
     marker_publisher.publish(marker)
 
-def main(free_segments, shortest_path):
+def main():
     rospy.init_node('vgraph_project')
 
     marker_publisher = rospy.Publisher('vgraph_markers', Marker, queue_size=10)
     rospy.sleep(0.5)
     
+    obstacle_segments, free_segments, shortest_path = run_vgraph()
+
     # rospy.spin()
     while not rospy.is_shutdown():
+        # draw the obstacle_segments
+        draw_obstacles(marker_publisher, obstacle_segments)
+        
         # draw free segments
         draw_vgraph(marker_publisher, free_segments)
         
@@ -83,19 +89,21 @@ def main(free_segments, shortest_path):
         rospy.sleep(0.1)
 
 if __name__ == '__main__':
-    free_segments = []
-    shortest_path = []
+    # free_segments = []
+    # shortest_path = []
 
-    with open("free_segments.txt", "r") as fp:
-        lines = fp.readlines()
-        for segment in lines:
-            free_segments.append(ast.literal_eval(segment))
+    # with open("free_segments.txt", "r") as fp:
+    #     lines = fp.readlines()
+    #     for segment in lines:
+    #         free_segments.append(ast.literal_eval(segment))
 
-    with open("shortest_path.txt", 'r') as fp:
-        lines =  fp.readlines()
-        for i in range(0, len(lines)-1):
-            shortest_path.append((ast.literal_eval(lines[i]), ast.literal_eval(lines[i+1])))
+    # with open("shortest_path.txt", 'r') as fp:
+    #     lines =  fp.readlines()
+    #     for i in range(0, len(lines)-1):
+    #         shortest_path.append((ast.literal_eval(lines[i]), ast.literal_eval(lines[i+1])))
+
+    main()
     
-    # print(shortest_path)
-    main(list(itertools.chain.from_iterable(free_segments)), 
-    list(itertools.chain.from_iterable(shortest_path)))
+    # # print(shortest_path)
+    # main(list(itertools.chain.from_iterable(free_segments)), 
+    # list(itertools.chain.from_iterable(shortest_path)))

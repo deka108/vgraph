@@ -233,7 +233,8 @@ def extract_non_intersecting_lines(candidate_segments, obstacle_segments):
             if point_lie_on_segment(obs_segment[0], obs_segment[1], can_segment[1]):
                 continue
 
-            intersect = segment_intersect(*can_segment, *obs_segment)
+            intersect = segment_intersect(can_segment[0], can_segment[1], 
+                obs_segment[0], obs_segment[1])
             if intersect:
                 break
 
@@ -282,7 +283,6 @@ def plot_map(start, goal, obstacles):
 
 
 def main():
-
     obstacles = load_obstacles("../data/world_obstacles.txt")
 
     # Set the origin and destination
@@ -314,6 +314,8 @@ def main():
 
     way_points = graph.dijkstra(start_point, goal_point)
     print(way_points)
+
+    return obstacle_segments, all_free_segments, way_points
 
 
 if __name__ == '__main__':
