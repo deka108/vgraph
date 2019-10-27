@@ -118,30 +118,6 @@ def convex_hull(obstacles):
     return hulls, grown_obstacles
 
 
-def plot_obstacle_growth(grown_obstacles):
-    for obstacle in grown_obstacles:
-        x = obstacle[:, 0]
-        y = obstacle[:, 1]
-        x = np.append(x, x[0])
-        y = np.append(y, y[0])
-        plt.plot(x, y, '--k')
-
-
-def plot_origin_destination(start, goal):
-    plt.plot(goal[0], goal[1], 'ob')
-    plt.plot(start[0], start[1], 'or')
-
-
-def plot_obstacles(obstacles):
-    for obstacle in enumerate(obstacles):
-        x = [point[0] for point in obstacle]
-        y = [point[1] for point in obstacle]
-        x.append(obstacle[0][0])
-        y.append(obstacle[0][1])
-
-        plt.plot(x, y, 'r-')
-
-
 class Direction:
     CLOCKWISE = 0
     ANTI_CLOCKWISE = 1
@@ -245,7 +221,7 @@ def extract_non_intersecting_lines(candidate_segments, obstacle_segments):
 
 def vgraph(all_points, obstacle_segments):
     """
-    Obtain non intersecting segments from vornoi graph
+    Obtain non intersecting segments from visibility graph
     :param all_points:
     :param obstacle_segments:
     :return:
@@ -260,25 +236,6 @@ def vgraph(all_points, obstacle_segments):
             free_segments = extract_non_intersecting_lines(candidate_segments, obstacle_segments)
             visible_segments.append(free_segments)
     return visible_segments
-
-
-def plot_map(start, goal, obstacles):
-    img = np.full((600, 1200, 3), 255, np.uint8)
-
-    obs = []
-    for ob in obstacles:
-        ob = map2img(ob)
-        obs.append(ob)
-        cv2.fillConvexPoly(img, ob.reshape(-1, 1, 2), (255,255,0))
-
-    # draw start and goal point
-    goal_img = tuple(map2img([goal])[0])
-    start_img = tuple(map2img([start])[0])
-    circ1 = cv2.circle(img, goal_img, 7, (100, 0, 0), -1)
-    circ2 = cv2.circle(img, start_img, 7, (0, 0, 100), -1)
-
-    fig = plt.figure(figsize=(20, 20))
-    plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
 
 
 def main():
