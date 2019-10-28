@@ -48,8 +48,6 @@ def draw_shortest_path(marker_publisher, points):
     marker.color.g = 1.0
     marker.color.b = 0.0
 
-    #points = list(itertools.chain.from_iterable(points)) 
-    #points = list(itertools.chain.from_iterable(points)) 
     shortest_path = []
     for i in range(len(points) - 1):
       shortest_path.append(points[i])
@@ -112,21 +110,4 @@ def main():
 
 
 if __name__ == '__main__':
-    # free_segments = []
-    # shortest_path = []
-
-    # with open("free_segments.txt", "r") as fp:
-    #     lines = fp.readlines()
-    #     for segment in lines:
-    #         free_segments.append(ast.literal_eval(segment))
-
-    # with open("shortest_path.txt", 'r') as fp:
-    #     lines =  fp.readlines()
-    #     for i in range(0, len(lines)-1):
-    #         shortest_path.append((ast.literal_eval(lines[i]), ast.literal_eval(lines[i+1])))
-
     main()
-    
-    # # print(shortest_path)
-    # main(list(itertools.chain.from_iterable(free_segments)), 
-    # list(itertools.chain.from_iterable(shortest_path)))
