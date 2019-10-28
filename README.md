@@ -1,13 +1,19 @@
 # Lab 3 - Visibility Graph Path Planning
 Lab 3 for [COMSW4733 Computational Aspects of Robotics](https://www.cs.columbia.edu/~allen/F19/) at Columbia University (Instructor: [Prof. Peter Allen](http://www.cs.columbia.edu/~allen/)).
 
-Authors: Deka Auliya, Madhavan Seshadri and Shravan Karthik
+## Authors
+
+| Name | UNI|
+| - | - |
+| Deka Auliya Akbar | da2897 |
+| Madhavan Seshadri | ms5945 |
+| Shravan Karthik | sk4653 |
 
 ----
 ### Prerequisites:
 1. Installation of `indigo-devel` on Ubuntu 14.04
 
-1. Installation of `turtlebot gazebo` packagae
+1. Installation of `turtlebot gazebo` package
 
 1. Setup a catkin development environment:
     1. Make a new directory using the following command 
@@ -41,6 +47,19 @@ This script will invoke functions from the following scripts: `vgraph.py` and `m
 
 ----
 ### Method
+
+In this project, we're implementing robot path planning using Visibility Graph (VGraph). This is achieved by:
+1. Growing the obstacles using bot's central point as origin
+2. Connect all the possible segments and extracting all the visible segments
+3. Find the Shortest Path from start to goal based on the VGraph. We chose Dijkstra for the shortest path implementation.
+4. Use the shortest path information to instruct how the robot should move from start to goal position while avoiding the obstacles.
+
+We're using [ROS markers](http://docs.ros.org/melodic/api/visualization_msgs/html/msg/Marker.html) to display the lines surrounding the expanded obstacle boundaries, VGraph and shortest path. As for moving the robot, we're using Odometry from project 2 to give a more accurate translation and rotation instructions.
+
+Our solution consist of three python files:
+- `vgraph.py`: logic for obstacle expansion, VGraph, and Dijkstra
+- `move_fwd.py`: logic for translating and rotating the bot using odometry
+- `vgraph_with_markers.py`: main file for running vgraph, drawing the markers, and instructing the robot to move
 
 #### Methods described in `vgraph.py`
 
@@ -87,6 +106,9 @@ to follow
 #### Methods described in `move_fwd.py`
 
 #### Methods described in `vgraph_with_marker.py`
+is the main file which calls both `vgraph.py` and `move_fwd.py`. This file will first call `vgraph.py` to extract the expanded obstacle edges, visible graph (the visible line segments), and shortest path; and display these edge information on RViz using Visualization markers. Last, it'll call `move_fwd.py` to instruct the robot to follow the shortest path while avoiding the obstacles from start to goal.
 
 ----
+
 ### Video
+Link: https://youtu.be/JFNBdTvrpdc
