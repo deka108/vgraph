@@ -10,13 +10,11 @@ from math import *
 from sensor_msgs.msg import LaserScan
 
 # Metadata
-# TWIST_PUBLISHER_NAME = "/cmd_vel_mux/input/teleop"
 TWIST_PUBLISHER_NAME = '/cmd_vel'
 
 class OutAndBack:
 
     def __init__(self):
-        #rospy.init_node('move_bot')
 
         # Setup all publishers
         self.cmd_vel = rospy.Publisher(TWIST_PUBLISHER_NAME, Twist, queue_size=5)
@@ -46,6 +44,7 @@ class OutAndBack:
                 rospy.signal_shutdown("tf Exception")
     
     def move_forward(self, xin,yin,xf,yf):
+        #Compute angle to rotate followed by linear distance to move
         x1 = xin
         y1 = yin
         x2 = xf
@@ -61,6 +60,9 @@ class OutAndBack:
         self.cmd_vel.publish(Twist())
 	
     def move(self, distance, axis=0):
+        #Function responsible for linear translation.. This will move straight
+        #along the direction in which the bot is oriented
+
         print("Moving for: ", distance)
         linear_speed = 0.5
 
@@ -101,6 +103,8 @@ class OutAndBack:
         self.cmd_vel.publish(Twist())
 
     def rotate(self, goal_angle_degrees):
+        #Wrapper function which takes as input degrees to rotate and passes 
+        #converted radians to the rotate_radians function
         goal_angle = goal_angle_degrees * pi / 180
         self.rotate_radians(goal_angle)
     
@@ -110,9 +114,6 @@ class OutAndBack:
         angular_tolerance = 0.02
 
         (position, rotation) = self.get_odom()
-
-        #goal_angle += (round(rotation*2/pi) * pi/2) - rotation
-        #print("Final goal_angle is", degrees(goal_angle))
 
         move_cmd = Twist()
         self.cmd_vel.publish(move_cmd)
@@ -156,6 +157,8 @@ class OutAndBack:
         return Point(*trans), quat_to_angle(Quaternion(*rot))
 
     def MovePath(self,coords):
+        #Function that takes as input a list of coordinates which represent the
+        #path that needs to be traversed and traverses the path one edge at a time
         numPts = len(coords)
         for x in range((numPts-1)):
             x1,y1 = coords[x]

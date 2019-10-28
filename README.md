@@ -104,6 +104,16 @@ to follow
     1. Return the calculated waypoints.
     
 #### Methods described in `move_fwd.py`
+1. Class OutAndBack is responsible for the translation and rotation of the bot with an odometer as reference
+1. The __init__ function is responsible for the setting up all the publishers and setting up a transform to fetch data from the odometer
+1. The move\_forward function is responsible for moving the bot along the edge. It takes as input the starting x,y and ending x,y values and 
+performs a rotation and translation to move along the edge
+1. The move command implements linear translation. It takes as input distance, and move linearly for the given distance. Throughout the motion,
+odometer readings are referenced to check if the destination is reached
+1. The rotate_radians command is responsible for rotation of the bot for a given angle (in radians). The function also uses the odometer reading
+to gauge rotation needed
+1. The function MovePath takes an input a list of coordinates representing the shortest path. Once the shortest path is calculated in the above methods,
+this method is called which deconstructs edges, and calls the move_forward command for each edge. At the end of this call the destination is reached.
 
 #### Methods described in `vgraph_with_marker.py`
 is the main file which calls both `vgraph.py` and `move_fwd.py`. This file will first call `vgraph.py` to extract the expanded obstacle edges, visible graph (the visible line segments), and shortest path; and display these edge information on RViz using Visualization markers. Last, it'll call `move_fwd.py` to instruct the robot to follow the shortest path while avoiding the obstacles from start to goal.
